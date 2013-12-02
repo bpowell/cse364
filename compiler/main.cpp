@@ -30,9 +30,7 @@ int main(int argc, char * argv[])
 	x86_64 << "global _start\nSECTION .text\n\n_start:\n";
 
 	for(std::vector<Statement*>::iterator it = pgrm_block->statements.begin(); it!=pgrm_block->statements.end(); ++it){
-		std::cout << "Type " << typeid(**it).name() << std::endl;
 		(*it)->code_gen(bcpu, x86_64);
-		std::cout << std::endl;
 	}
 
 	bcpu.close();
