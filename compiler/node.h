@@ -96,6 +96,9 @@ class Math : public Expression{
 				case '/':
 					rvalue = rv / lv;
 					break;
+				default:
+					std::cerr << "Bad math operation\n";
+					return;
 			}
 			bcpu << rvalue;
 			x86_64 << rvalue;
