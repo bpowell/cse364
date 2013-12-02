@@ -15,7 +15,7 @@ class Node{
 
 class Expression : public Node{
 	public:
-		virtual void code_gen(std::ofstream &bcpu){}
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){}
 		int rvalue;
 		std::string name;
 		Expression(int rvalue) : rvalue(rvalue) {}
@@ -26,13 +26,13 @@ static std::map<std::string,int> vars;
 
 class Statement : public Node{
 	public:
-		virtual void code_gen(std::ofstream &bcpu){}
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){}
 };
 
 class Integer : public Expression{
 	public:
 		Integer(int rvalue) : Expression(rvalue) {}
-		virtual void code_gen(std::ofstream &bcpu){
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
 			bcpu << rvalue;
 		}
 };
@@ -40,7 +40,7 @@ class Integer : public Expression{
 class Identifier : public Expression{
 	public:
 		Identifier(std::string name) : Expression(0, name) {}
-		virtual void code_gen(std::ofstream &bcpu){
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
 		}
 };
 
@@ -51,10 +51,10 @@ class Math : public Expression{
 		Expression &lhs;
 		int rv, lv;
 		Math(Expression &lhs, char op, Expression &rhs) : Expression(0), lhs(lhs), op(op), rhs(rhs) {}
-		virtual void code_gen(std::ofstream &bcpu){
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
 			int lv, rv;
 			if(typeid(lhs)==typeid(Math)){
-				lhs.code_gen(bcpu);
+				lhs.code_gen(bcpu, x86_64);
 				lv = lhs.rvalue;
 			}else if(typeid(lhs)==typeid(Identifier)){
 				if(vars.count(lhs.name)>0){
@@ -69,7 +69,7 @@ class Math : public Expression{
 			}
 
 			if(typeid(rhs)==typeid(Math)){
-				rhs.code_gen(bcpu);
+				rhs.code_gen(bcpu, x86_64);
 				rv = rhs.rvalue;
 			}else if(typeid(rhs)==typeid(Identifier)){
 				if(vars.count(rhs.name)>0){
@@ -109,10 +109,10 @@ class Block : public Expression{
 	public:
 		std::vector<Statement*> statements;
 		Block() : Expression(0) {}
-		virtual void code_gen(std::ofstream &bcpu){
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
 			std::vector<Statement*>::iterator it = statements.begin();
 			for(; it!=statements.end(); ++it){
-				(*it)->code_gen(bcpu);
+				(*it)->code_gen(bcpu, x86_64);
 			}
 		}
 };
@@ -122,7 +122,7 @@ class FunctionCall : public Statement{
 	public:
 		Identifier *id;
 		FunctionCall(Identifier *id) : id(id) {}
-		virtual void code_gen(std::ofstream &bcpu){
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
 			bcpu << "jmp " << id->name << std::endl;
 		}
 };
@@ -134,11 +134,11 @@ class IfStatement : public Statement{
 		Block *block;
 		int op;
 		IfStatement(Expression *lhs, int op, Expression *rhs, Block *block) : lhs(lhs), op(op), rhs(rhs), block(block) {}
-		virtual void code_gen(std::ofstream &bcpu){
-			lhs->code_gen(bcpu);
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
+			lhs->code_gen(bcpu, x86_64);
 			bcpu << "==" << std::endl;
-			rhs->code_gen(bcpu);
-			block->code_gen(bcpu);
+			rhs->code_gen(bcpu, x86_64);
+			block->code_gen(bcpu, x86_64);
 		}
 };
 
@@ -147,9 +147,9 @@ class Function : public Statement{
 		Identifier *id;
 		Block *block;
 		Function(Identifier *id, Block *block) : id(id), block(block) {}
-		virtual void code_gen(std::ofstream &bcpu){
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
 			bcpu << id->name << ":" << std::endl;
-			block->code_gen(bcpu);
+			block->code_gen(bcpu, x86_64);
 		}
 };
 
@@ -168,11 +168,11 @@ class Variable : public Statement{
 			sp = stack_pointer;
 			vars.insert(std::pair<std::string,int>(ident->name, expr->rvalue));
 		}
-		virtual void code_gen(std::ofstream &bcpu){
-			ident->code_gen(bcpu);
+		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
+			ident->code_gen(bcpu, x86_64);
 			if(expr!=NULL){
 				bcpu << "lw bp+" << sp*4 << ", ";
-				expr->code_gen(bcpu);
+				expr->code_gen(bcpu, x86_64);
 				bcpu << std::endl;
 			}
 		}

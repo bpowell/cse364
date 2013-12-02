@@ -23,15 +23,18 @@ int main(int argc, char * argv[])
 	fclose(fp);
 
 	std::ofstream bcpu;
+	std::ofstream x86_64;
 	bcpu.open("bcpu.asm", std::ios::out);
+	x86_64.open("x86_64.asm", std::ios::out);
 
 	for(std::vector<Statement*>::iterator it = pgrm_block->statements.begin(); it!=pgrm_block->statements.end(); ++it){
 		std::cout << "Type " << typeid(**it).name() << std::endl;
-		(*it)->code_gen(bcpu);
+		(*it)->code_gen(bcpu, x86_64);
 		std::cout << std::endl;
 	}
 
 	bcpu.close();
+	x86_64.close();
 
 	return 0;
 }
