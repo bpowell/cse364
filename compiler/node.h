@@ -119,7 +119,6 @@ class Block : public Expression{
 		}
 };
 
-
 class FunctionCall : public Statement{
 	public:
 		Identifier *id;
@@ -141,7 +140,6 @@ class Function : public Statement{
 			block->code_gen(bcpu, x86_64);
 		}
 };
-
 
 class Variable : public Statement{
 	public:
@@ -168,6 +166,5 @@ class Variable : public Statement{
 			}
 		}
 };
-
 
 #endif
