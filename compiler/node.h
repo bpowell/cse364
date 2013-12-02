@@ -130,21 +130,6 @@ class FunctionCall : public Statement{
 		}
 };
 
-class IfStatement : public Statement{
-	public:
-		Expression *lhs;
-		Expression *rhs;
-		Block *block;
-		int op;
-		IfStatement(Expression *lhs, int op, Expression *rhs, Block *block) : lhs(lhs), op(op), rhs(rhs), block(block) {}
-		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
-			lhs->code_gen(bcpu, x86_64);
-			bcpu << "==" << std::endl;
-			rhs->code_gen(bcpu, x86_64);
-			block->code_gen(bcpu, x86_64);
-		}
-};
-
 class Function : public Statement{
 	public:
 		Identifier *id;

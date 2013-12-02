@@ -26,7 +26,7 @@
 %token <token> IF EQUALEQUAL
 
 %type <block> program stmts block
-%type <stmt> stmt def_var def_func call_func if_stmt
+%type <stmt> stmt def_var def_func call_func 
 %type <ident> ident
 %type <expr> expr numeric
 
@@ -47,11 +47,7 @@ stmts : stmt		{ $$ = new Block(); $$->statements.push_back($<stmt>1); }
 stmt : def_var
      | def_func
      | call_func
-     | if_stmt
      ;
-
-if_stmt : IF '(' expr EQUALEQUAL expr ')' block { $$ = new IfStatement($3, $4, $5, $7); }
-	;
 
 def_var : INT ident ';' { $$ = new Variable($2); }
 	| INT ident '=' expr ';' { $$ = new Variable($2, $4); }
