@@ -171,7 +171,7 @@ class Variable : public Statement{
 		virtual void code_gen(std::ofstream &bcpu){
 			ident->code_gen(bcpu);
 			if(expr!=NULL){
-				bcpu << "mov bp+" << sp*4 << ", ";
+				bcpu << "lw bp+" << sp*4 << ", ";
 				expr->code_gen(bcpu);
 				bcpu << std::endl;
 			}
