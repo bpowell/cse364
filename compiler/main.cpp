@@ -27,6 +27,8 @@ int main(int argc, char * argv[])
 	bcpu.open("bcpu.asm", std::ios::out);
 	x86_64.open("x86_64.asm", std::ios::out);
 
+	x86_64 << "global _start\nSECTION .text\n\n_start:\n";
+
 	for(std::vector<Statement*>::iterator it = pgrm_block->statements.begin(); it!=pgrm_block->statements.end(); ++it){
 		std::cout << "Type " << typeid(**it).name() << std::endl;
 		(*it)->code_gen(bcpu, x86_64);

@@ -86,22 +86,21 @@ class Math : public Expression{
 			switch(op){
 				case '+':
 					rvalue = rv + lv;
-					bcpu << rvalue;
 					break;
 				case '-':
 					rvalue = rv - lv;
-					bcpu << rvalue;
 					break;
 				case '*':
 					rvalue = rv * lv;
-					bcpu << rvalue;
 					break;
 				case '/':
 					rvalue = rv / lv;
-					bcpu << rvalue;
 					break;
 			}
+			bcpu << rvalue;
+			x86_64 << rvalue;
 			bcpu << std::endl;
+			x86_64 << std::endl;
 		}
 };
 
@@ -124,6 +123,7 @@ class FunctionCall : public Statement{
 		FunctionCall(Identifier *id) : id(id) {}
 		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
 			bcpu << "jmp " << id->name << std::endl;
+			x86_64 << "jmp " << id->name << std::endl;
 		}
 };
 
@@ -149,6 +149,7 @@ class Function : public Statement{
 		Function(Identifier *id, Block *block) : id(id), block(block) {}
 		virtual void code_gen(std::ofstream &bcpu, std::ofstream &x86_64){
 			bcpu << id->name << ":" << std::endl;
+			x86_64 << id->name << ":" << std::endl;
 			block->code_gen(bcpu, x86_64);
 		}
 };
@@ -172,8 +173,10 @@ class Variable : public Statement{
 			ident->code_gen(bcpu, x86_64);
 			if(expr!=NULL){
 				bcpu << "lw bp+" << sp*4 << ", ";
+				x86_64 << "mov [bp+" << sp*4 << "], ";
 				expr->code_gen(bcpu, x86_64);
 				bcpu << std::endl;
+				x86_64 << std::endl;
 			}
 		}
 };
