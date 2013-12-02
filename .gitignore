@@ -11,3 +11,14 @@
 *.lai
 *.la
 *.a
+
+# VIM files
+*.*.swp
+
+# Generated files
+parser.cpp
+parser.hpp
+parser.output
+tokens.cpp
+compiler
+
